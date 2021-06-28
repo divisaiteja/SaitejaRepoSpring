@@ -1,0 +1,208 @@
+<%-- <%@include file="header.jsp"%>
+<script src="resources/customjs/editemployeesjs.js"></script>
+<script>
+$( function() {
+    $( "#doj" ).datepicker({
+    	 dateFormat:"dd-mm-yy", 
+    });
+   
+  } );
+</script>
+
+<script>
+$( function() {
+    $( "#todate" ).datepicker({
+    	 dateFormat:"dd-mm-yy", 
+    });
+   
+  } );
+</script>
+<div>
+	<h3 align="center">HR REPORT CENTER</h3>
+</div>
+<hr color="00FFFF">
+<div class="col-md-6">
+	<h4 align="left" style="color: #fb8c00">HeaderInformation</h4>
+</div>
+<div class="box-content row">
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">Division</label> <select
+			class="form-control" id="division" multiple>
+		</select>
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">Cadre</label> <select
+			class="form-control" id="cadreid" multiple>
+		</select>
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">Grade</label> <select
+			class="form-control" id="gradeId" multiple>
+		</select>
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">Departement</label> <select
+			class="form-control" id="workdeptid" multiple>
+		</select>
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">Section</label> <select
+			class="form-control" id="sectionid" multiple>
+		</select>
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">JobStatus</label> <select
+			class="form-control" id="jobstatus" multiple>
+		</select>
+	</div>
+
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">Employee
+			Status</label> <select class="form-control" id="empstatus" multiple>
+		</select>
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">ID No</label> <input
+			type="text" id="idNumber" class="form-control">
+
+	</div>
+
+	<div class="form-group has-warning  col-md-3">
+		<label class="control-label" for="inputWarning1">Left Employee</label>
+		<label> <input type="checkbox" id="" value="1">Yes
+		</label><br>
+	</div>
+
+
+	<div class="form-group has-warning col-md-3">
+		<label class="control-label" for="inputWarning1">Retirement
+			Date</label> <label> <input type="checkbox" id="" value="1">Yes
+		</label><br>
+	</div>
+
+
+
+
+</div>
+<hr color="00FFFF">
+<!-- Period Start -->
+
+<div class="col-md-6">
+	<h4 align="left" style="color: #fb8c00">Period</h4>
+
+</div>
+
+<div class="box-content row">
+
+	<div class="form-group has-warning   col-md-1">
+		<label class="control-label" for="inputWarning1">Fin.Year</label> <select
+			class="form-control" id="">
+
+		</select>
+	</div>
+
+	<div class="form-group has-warning   col-md-2">
+		<label class="control-label" for="inputWarning1">Calender Year</label>
+		<select class="form-control" id="">
+
+		</select>
+
+
+	</div>
+
+	<div class="form-group has-warning   col-md-2">
+		<label class="control-label" for="inputWarning1">Month</label> <select
+			class="form-control" id="">
+			<option value=''>Select Month</option>
+			<option value='1'>Janaury</option>
+			<option value='2'>February</option>
+			<option value='3'>March</option>
+			<option value='4'>April</option>
+			<option value='5'>May</option>
+			<option value='6'>June</option>
+			<option value='7'>July</option>
+			<option value='8'>August</option>
+			<option value='9'>September</option>
+			<option value='10'>October</option>
+			<option value='11'>November</option>
+			<option value='12'>December</option>
+
+		</select>
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">From Date </label> <input
+			type="text" id="doj" class="form-control">
+
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">To Date </label> <input
+			type="text" id="todate" class="form-control">
+
+	</div>
+
+</div>
+<hr color="00FFFF">
+<!-- Display option -->
+
+<div class="col-md-6">
+	<h4 align="left" style="color: #fb8c00">Display Option</h4>
+
+</div>
+
+<div class="box-content row">
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">Employee
+			Details</label> <select class="form-control" id="" multiple>
+		</select>
+	</div>
+
+	<div class="form-group has-warning col-md-2">
+		<label class="control-label" for="inputWarning1">Salary
+			Details </label> <select class="form-control" id="" multiple>
+		</select>
+	</div>
+
+	<div class="form-group has-warning   col-md-2">
+		<label class="control-label" for="inputWarning1">Order By</label> <select
+			class="form-control" id="">
+
+		</select>
+	</div>
+
+
+
+
+</div>
+<hr color="00FFFF">
+
+<!-- Result -->
+
+<div class="col-md-6">
+	<h4 align="left" style="color: #fb8c00">Result</h4>
+
+</div>
+<div class="box-content row">
+	<div class="form-group has-warning    col-md-3">
+		<label class="control-label" for="inputWarning1">Report Name</label><br>
+		<select class="form-control" id="">
+		</select>
+	</div>
+
+
+	<div align="right">
+		<input type="submit" value="show" class="" onclick="">
+	</div>
+</div>
+
+<%@include file="footer.jsp"%> --%>

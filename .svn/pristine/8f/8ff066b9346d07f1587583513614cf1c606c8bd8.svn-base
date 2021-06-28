@@ -1,0 +1,100 @@
+package com.hrms.Dao;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.stereotype.Repository;
+
+import com.hrms.dtos.ChartsDTO;
+import com.hrms.dtos.DivisionDTO;
+import com.hrms.dtos.EducationDetailsDTO;
+import com.hrms.utitlities.DBUtil;
+import com.hrms.utitlities.constants;
+
+@Repository
+public class ChartsDaoImpl implements ChartsDao {
+
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+	
+
+	
+
+	@Override
+	public String getDivisionBarGraphs() {
+		final ArrayList<String> deplist=new ArrayList<String>();
+		try {
+		
+		List<ChartsDTO> list = new ArrayList<ChartsDTO>();
+		Connection con=DBUtil.getConnection();
+		Statement stm=con.createStatement();
+		String sql="select * from hr_department";
+		ResultSet rst=stm.executeQuery(sql);
+		while(rst.next()) {
+			deplist.add(rst.getString(2));
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		final StringBuilder sb=new StringBuilder();
+		
+		
+		String sqlQurey="select  hp.projectname projectname, count(h.idno) as count from hr_empmaster" + 
+				" h join hr_projects hp on hp.tranid=h.project  " + 
+				" group by hp.projectname ";
+		return jdbcTemplate.query(sqlQurey, new ResultSetExtractor<String>() {
+			@Override
+			public String extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+				while (rs.next()) {
+						sb.append(rs.getString("projectname")+"["+rs.getInt("count")+"],");
+					}
+				   
+							
+			
+				String data1=sb.toString();
+				System.out.println(">>"+data1+deplist);
+				return data1   ;
+			}
+		});	
+
+	}
+
+
+	@Override
+	public List<ChartsDTO> getBarGraphsOnDivisons() {
+		String sql="select  hd.name as depname ,hrd.name as divisionname, count(h.idno) as count from hr_empmaster" + 
+				" h join hr_department hd on hd.deptid=h.workdeptid  " + 
+				" join hr_division hrd on hrd.divisionid=h.workingdivisionid where h.workingdivisionid = 1" + 
+				" group by h.workingdivisionid ,h.workdeptid order by h.workdeptid";
+		
+		return jdbcTemplate.query(sql, new ResultSetExtractor<List<ChartsDTO>>() {
+
+			@Override
+			public List<ChartsDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+				List<ChartsDTO> list = new ArrayList<ChartsDTO>();
+				//final StringBuilder sb=new StringBuilder();
+				while (rs.next()) {
+					ChartsDTO d = new ChartsDTO();
+					d.setDepartmentName(rs.getString("depname"));
+					d.setDivisionName(rs.getString("divisionname"));
+					d.setCount(rs.getInt("count"));
+					//sb.append(rs.getString("divisionname")+"==="+rs.getString("depname")+","+rs.getInt("")+",");
+					list.add(d);
+				}
+				return list;
+			}
+		});
+	}
+        
+}

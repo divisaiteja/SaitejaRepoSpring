@@ -1,0 +1,648 @@
+package com.hrms.Dao;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.stereotype.Repository;
+
+import com.hrms.commons.LeaveCalculation;
+import com.hrms.dtos.CadreDTO;
+import com.hrms.dtos.DivisionDTO;
+import com.hrms.dtos.EducationDetailsDTO;
+import com.hrms.dtos.EmployeeMasterDTO;
+import com.hrms.dtos.EmployeeShiftScheduleDTO;
+import com.hrms.dtos.ExperienceDetailsDTO;
+import com.hrms.dtos.FamilyDetailsDTO;
+import com.hrms.dtos.GradeListDTO;
+import com.hrms.dtos.HrDepartmentMaster;
+import com.hrms.dtos.JobStatusDTO;
+import com.hrms.dtos.PersonalDetailsDTO;
+import com.hrms.dtos.SalaryDetailsDTO;
+import com.hrms.dtos.SectionDTO;
+import com.hrms.utitlities.DBUtil;
+import com.hrms.utitlities.constants;
+
+
+@Repository
+public class HrReportDaoImpl implements HrReportDao {
+	@Autowired
+	private JdbcTemplate template;
+
+	@Override
+	public List<EmployeeMasterDTO> getEmpJobDetails(int division, int project) {
+
+		return template.query(
+				"select h.idno,h.doj,h.empname,h.desgn,h.empstatus,h.istechnical, hdiv.name divisionname ,dept.name dname,js.description jobstatus,ec.cadredescription cadre,gr.description grade,es.name sname  from hr_empmaster h left join hr_division hdiv on h.workingdivisionid=hdiv.divisionid left join hr_department dept on h.workdeptid=dept.deptid left join hr_section es on h.sectionid=es.sectionid  left join hr_jobstatus js on h.jobstatus=js.jobstatusid left join hr_empgrade gr on h.gradeid=gr.gradeno  left join hr_cadre ec on h.cadreid=ec.tranid where h.workingdivisionid="
+						+ division + " and h.project=" + project + "",
+				new ResultSetExtractor<List<EmployeeMasterDTO>>() {
+					@Override
+					public List<EmployeeMasterDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+						List<EmployeeMasterDTO> list = new ArrayList<EmployeeMasterDTO>();
+
+						while (rs.next()) {
+							EmployeeMasterDTO employeeMasterDTO = new EmployeeMasterDTO();
+							HrDepartmentMaster hrDepartmentMaster = new HrDepartmentMaster();
+							DivisionDTO divisionDTO = new DivisionDTO();
+							CadreDTO cadreDTO = new CadreDTO();
+							GradeListDTO gradeDTO = new GradeListDTO();
+							JobStatusDTO jobstatusDTO = new JobStatusDTO();
+							SectionDTO sectionDTO = new SectionDTO();
+							employeeMasterDTO.setIdNumber(rs.getInt("idno"));
+							employeeMasterDTO.setEmployeeName(rs.getString("empname"));
+							employeeMasterDTO.setDesign(rs.getString("desgn"));
+							employeeMasterDTO.setDateOfJoining(rs.getString("doj"));
+
+							switch (rs.getInt("istechnical")) {
+							case 0: {
+								employeeMasterDTO.setStatusCodeForActive("NO");
+							}
+								break;
+							case 1: {
+								employeeMasterDTO.setStatusCodeForActive("YES");
+								break;
+							}
+
+							default:
+								employeeMasterDTO.setStatusCodeForActive(constants.NotFound);
+								break;
+							}
+
+							hrDepartmentMaster.setName(rs.getString("dname"));
+							employeeMasterDTO.setHrDepartmentMaster(hrDepartmentMaster);
+							divisionDTO.setName(rs.getString("divisionname"));
+							employeeMasterDTO.setDivisiondto(divisionDTO);
+							jobstatusDTO.setDescription(rs.getString("jobstatus"));
+							employeeMasterDTO.setJobstatusDTO(jobstatusDTO);
+							cadreDTO.setCadredescription(rs.getString("cadre"));
+							employeeMasterDTO.setCadreDTO(cadreDTO);
+							gradeDTO.setDescription(rs.getString("grade"));
+							employeeMasterDTO.setGradeDTO(gradeDTO);
+							sectionDTO.setName(rs.getString("sname"));
+							employeeMasterDTO.setSectionDTO(sectionDTO);
+
+							list.add(employeeMasterDTO);
+
+						}
+						return list;
+					}
+
+				});
+
+	}
+
+	@Override
+	public List<PersonalDetailsDTO> getPersonalDetails(int division, int project) {
+		return template.query(
+				"select p.parentid,p.maritalstatus,p.mobilenumber,p.alternatemobilenumber,p.drivinglicenceno,p.drivinglicencevalidity,p.passportnumber,p.passportvalidity,p.adhaarnumber,p.adhaarnumber,p.pancardnumber,p.bankname,p.bankBranch,p.branchifsccode,p.accountnumber,p.presentaddress,p.permanentaddress,p.emailid,p.bloodgroup,p.cardnumber,e.dob from hr_personaldetails p join hr_empmaster e on p.parentid=e.idno  where e.workingdivisionid="
+						+ division + " and e.project=" + project + "",
+				new ResultSetExtractor<List<PersonalDetailsDTO>>() {
+					@Override
+					public List<PersonalDetailsDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+						List<PersonalDetailsDTO> personllist = new ArrayList<PersonalDetailsDTO>();
+
+						while (rs.next()) {
+
+							PersonalDetailsDTO personalDetailsDTO = new PersonalDetailsDTO();
+							personalDetailsDTO.setPersonalparentid(rs.getInt("parentid"));
+							personalDetailsDTO.setEmailid(rs.getString("emailid"));
+							personalDetailsDTO.setMaritalstatus(rs.getString("maritalstatus"));
+							personalDetailsDTO.setMobilenumber(rs.getString("mobilenumber"));
+							personalDetailsDTO.setAlternatemobilenumber(rs.getString("alternatemobilenumber"));
+							personalDetailsDTO.setDrivinglicenceno(rs.getString("drivinglicenceno"));
+							personalDetailsDTO.setDrivinglicencevalidity(rs.getString("drivinglicencevalidity"));
+							personalDetailsDTO.setPassportnumber(rs.getString("passportnumber"));
+							personalDetailsDTO.setPassportvalidity(rs.getString("passportvalidity"));
+							personalDetailsDTO.setAdhaarnumber(rs.getString("adhaarnumber"));
+							personalDetailsDTO.setPancardnumber(rs.getString("pancardnumber"));
+							personalDetailsDTO.setBankname(rs.getString("bankname"));
+							personalDetailsDTO.setAccountnumber(rs.getString("accountnumber"));
+							personalDetailsDTO.setBankbranch(rs.getString("bankbranch"));
+							personalDetailsDTO.setBranchifsccode(rs.getString("branchifsccode"));
+							personalDetailsDTO.setCardnumber(rs.getString("cardnumber"));
+							personalDetailsDTO.setPresentaddress(rs.getString("presentaddress"));
+							personalDetailsDTO.setPermanentaddress(rs.getString("permanentaddress"));
+							personalDetailsDTO.setBloodgroup(rs.getString("bloodgroup"));
+							personalDetailsDTO.setDoBirth(rs.getString("dob"));
+							personllist.add(personalDetailsDTO);
+
+						}
+						return personllist;
+					}
+
+				});
+
+	}
+
+	@Override
+	public List<FamilyDetailsDTO> getFamilyDetails(int division, int project) {
+		return template.query(
+				"select f.parentid,f.gender,f.name,f.relation,f.dob,f.adhaarno,f.qualification,f.occupation,f.mobileno from hr_familydetails f join hr_empmaster e on f.parentid=e.idno  where e.workingdivisionid="
+						+ division + " and e.project=" + project + "",
+				new ResultSetExtractor<List<FamilyDetailsDTO>>() {
+					@Override
+					public List<FamilyDetailsDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+						List<FamilyDetailsDTO> familylist = new ArrayList<FamilyDetailsDTO>();
+
+						while (rs.next()) {
+							FamilyDetailsDTO familyDetailsDTO = new FamilyDetailsDTO();
+							familyDetailsDTO.setParentid(rs.getInt("parentid"));
+							familyDetailsDTO.setGender(rs.getString("gender"));
+							familyDetailsDTO.setName(rs.getString("name"));
+							familyDetailsDTO.setRelation(rs.getString("relation"));
+							familyDetailsDTO.setDob(rs.getString("dob"));
+							familyDetailsDTO.setAdhaarno(rs.getString("adhaarno"));
+							familyDetailsDTO.setQualification(rs.getString("qualification"));
+							familyDetailsDTO.setOccupation(rs.getString("occupation"));
+							familyDetailsDTO.setMobileno(rs.getString("mobileno"));
+							familylist.add(familyDetailsDTO);
+
+						}
+						return familylist;
+					}
+
+				});
+	}
+
+	@Override
+	public List<ExperienceDetailsDTO> getExperienceDetails(int division, int project) {
+		return template.query(
+				"select ex.parentid,ex.employeename,ex.address,ex.workperiod,ex.designation,ex.ctc,ex.remarks,ex.experiencedetails from experience_details ex join hr_empmaster e on ex.parentid=e.idno  where e.workingdivisionid="
+						+ division + " and e.project=" + project + "",
+				new ResultSetExtractor<List<ExperienceDetailsDTO>>() {
+					@Override
+					public List<ExperienceDetailsDTO> extractData(ResultSet rs)
+							throws SQLException, DataAccessException {
+
+						List<ExperienceDetailsDTO> experiencelist = new ArrayList<ExperienceDetailsDTO>();
+
+						while (rs.next()) {
+							ExperienceDetailsDTO experienceDetailsDTO = new ExperienceDetailsDTO();
+							experienceDetailsDTO.setParentid(rs.getInt("parentid"));
+							experienceDetailsDTO.setEmployeename(rs.getString("employeename"));
+							experienceDetailsDTO.setAddress(rs.getString("address"));
+							experienceDetailsDTO.setWorkperiod(rs.getString("workperiod"));
+							experienceDetailsDTO.setDesignation(rs.getString("designation"));
+							experienceDetailsDTO.setCtc(rs.getString("ctc"));
+							experienceDetailsDTO.setRemarks(rs.getString("remarks"));
+							experienceDetailsDTO.setExperiencedetails(rs.getString("experiencedetails"));
+							experiencelist.add(experienceDetailsDTO);
+
+						}
+						return experiencelist;
+					}
+
+				});
+	}
+
+	@Override
+	public List<EducationDetailsDTO> getEducationDetails(int division, int project) {
+		return template.query(
+				"select ed.parentid,ed.certificates,ed.institutionname,ed.address,ed.yearofpassing,ed.markspercentage,ed.remarks from education_details ed join hr_empmaster e on ed.parentid=e.idno   where e.workingdivisionid="
+						+ division + " and e.project=" + project + "",
+				new ResultSetExtractor<List<EducationDetailsDTO>>() {
+					@Override
+					public List<EducationDetailsDTO> extractData(ResultSet rs)
+							throws SQLException, DataAccessException {
+
+						List<EducationDetailsDTO> educationlist = new ArrayList<EducationDetailsDTO>();
+
+						while (rs.next()) {
+							EducationDetailsDTO educationDetailsDTO = new EducationDetailsDTO();
+							educationDetailsDTO.setParentid(rs.getInt("parentid"));
+							educationDetailsDTO.setCertificates(rs.getString("certificates"));
+							educationDetailsDTO.setInstitutionname(rs.getString("institutionname"));
+							educationDetailsDTO.setAddress(rs.getString("address"));
+							educationDetailsDTO.setYearofpassing(rs.getString("yearofpassing"));
+							educationDetailsDTO.setMarkspercentage(rs.getFloat("markspercentage"));
+							educationDetailsDTO.setRemarks(rs.getString("remarks"));
+							educationlist.add(educationDetailsDTO);
+
+						}
+						return educationlist;
+					}
+
+				});
+
+	}
+
+	@Override
+	public List<EmployeeShiftScheduleDTO> getEmployeeShiftSchedule(int division, int project) {
+		return template.query(
+				"select es.idno,es.mon,es.tue,es.wed,es.thu,es.fri,es.sat,es.sun,es.effectfrom,es.effectto,es.oteligibility,es.isactive from hr_empshiftschedule es join hr_empmaster e on es.idno=e.idno   where e.workingdivisionid="
+						+ division + " and e.project=" + project + "",
+				new ResultSetExtractor<List<EmployeeShiftScheduleDTO>>() {
+					@Override
+					public List<EmployeeShiftScheduleDTO> extractData(ResultSet rs)
+							throws SQLException, DataAccessException {
+
+						List<EmployeeShiftScheduleDTO> shiftslist = new ArrayList<EmployeeShiftScheduleDTO>();
+
+						while (rs.next()) {
+							EmployeeShiftScheduleDTO employeeShiftScheduleDTO = new EmployeeShiftScheduleDTO();
+							employeeShiftScheduleDTO.setIdno(rs.getInt("idno"));
+							employeeShiftScheduleDTO.setMonday(rs.getInt("mon"));
+							employeeShiftScheduleDTO.setTuesday(rs.getInt("tue"));
+							employeeShiftScheduleDTO.setWednesday(rs.getInt("wed"));
+							employeeShiftScheduleDTO.setThursday(rs.getInt("thu"));
+							employeeShiftScheduleDTO.setFriday(rs.getInt("fri"));
+							employeeShiftScheduleDTO.setSaturday(rs.getInt("sat"));
+							employeeShiftScheduleDTO.setSunday(rs.getInt("sun"));
+							employeeShiftScheduleDTO.setEffectFrom(rs.getString("effectfrom"));
+							employeeShiftScheduleDTO.setEffectTo(rs.getString("effectto"));
+							employeeShiftScheduleDTO.setOtEligibility(rs.getInt("oteligibility"));
+							switch (rs.getInt("isactive")) {
+							case 0: {
+								employeeShiftScheduleDTO.setStatusCodeForActive(constants.InActive);
+								break;
+							}
+							case 1: {
+								employeeShiftScheduleDTO.setStatusCodeForActive(constants.Active);
+								break;
+							}
+							default:
+								employeeShiftScheduleDTO.setStatusCodeForActive(constants.NotFound);
+								break;
+							}
+							employeeShiftScheduleDTO.setIsActive(rs.getInt("isactive"));
+							shiftslist.add(employeeShiftScheduleDTO);
+						}
+						return shiftslist;
+					}
+
+				});
+	}
+
+	@Override
+	public List<SalaryDetailsDTO> getSalaryDetails(int division, int project) {
+
+		return template.query(
+				"select r.idno,r.wef,r.basic,r.da,r.lta,r.hra,r.medical,r.conveyance,r.bonus,r.others1,r.others2,r.grosssalary,r.pfpercentage from hr_rateofpay r join hr_empmaster e on r.idno=e.idno   where e.workingdivisionid="
+						+ division + " and e.project=" + project + "",
+				new ResultSetExtractor<List<SalaryDetailsDTO>>() {
+					@Override
+					public List<SalaryDetailsDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+						List<SalaryDetailsDTO> salarylist = new ArrayList<SalaryDetailsDTO>();
+
+						while (rs.next()) {
+							SalaryDetailsDTO salaryDetailsDTO = new SalaryDetailsDTO();
+							salaryDetailsDTO.setIdno(rs.getInt("idno"));
+							salaryDetailsDTO.setWef(rs.getString("wef"));
+							salaryDetailsDTO.setBasic(rs.getString("basic"));
+							salaryDetailsDTO.setDa(rs.getString("da"));
+							salaryDetailsDTO.setLta(rs.getString("lta"));
+							salaryDetailsDTO.setHra(rs.getString("hra"));
+							salaryDetailsDTO.setMedical(rs.getString("medical"));
+							salaryDetailsDTO.setConveyance(rs.getString("conveyance"));
+							salaryDetailsDTO.setBonus(rs.getString("bonus"));
+							salaryDetailsDTO.setOthers1(rs.getString("others1"));
+							salaryDetailsDTO.setOthers2(rs.getString("others2"));
+							salaryDetailsDTO.setGrosssalary(rs.getString("grosssalary"));
+							salaryDetailsDTO.setPfpercentage(rs.getFloat("pfpercentage"));
+							salarylist.add(salaryDetailsDTO);
+						}
+						return salarylist;
+					}
+
+				});
+	}
+
+	
+	@Override
+	public List<Map<String,Object>> getDailyAttendenceStrenthReport(int division,String fromdate) {
+		Connection connection=null;
+		Statement statement=null;
+		Statement statement1=null;
+		Statement statement2=null;		
+		ResultSet rs =null;
+		ResultSet rs1 = null;
+		ResultSet rs2 = null;
+		 connection = DBUtil.getConnection();
+		List<Map<String, Object>> listemployeeAndcontract = new ArrayList<Map<String, Object>>();
+		/*List<Object> list = new ArrayList<Object>();*/
+		try {
+			 statement = connection.createStatement();
+			 statement1 = connection.createStatement();
+			 statement2 = connection.createStatement();
+			//String employee = "select emp1.idno,count(m.present) , sum(m.overtime) ,count(m.od) , count(m.ph) , count(m.leaves) , count(m.lop) , count(m.wh) from hr_muster m join hr_empmaster emp1 on m.idno=emp1.idno join hr_jobtype j on j.tranid=emp1.jobtype  where j.tranid=1  group by emp1.idno  ";
+			 String sql = "select * from hr_projects where isactive=1 order  by projectname";
+			 rs = statement.executeQuery(sql);
+			 int vslno=0;
+			 int employeeTotal=0;
+			 int contractTotal=0;
+			 int odTotal=0;
+			 int woffTotal=0;
+			 int leaveTotal=0;
+			 int phTotal=0;
+			 int lopTotal=0;
+			 int employeeOtTotal=0;
+			 int contractOtTotal=0;
+			 String sql1="";
+			 String sql2="";
+			 while(rs.next()) {
+				 Map<String, Object> map = new HashMap<String, Object>();
+				 
+				 vslno=vslno+1;
+				 map.put("slno", vslno);
+				 map.put("deptName", rs.getString("projectname"));
+				 sql1="select e.project,sum(if(present>0,1,0)) as pre,sum(if(od>0,1,0)) as od,sum(if(wh>0,1,0)) as wh,sum(if(leaves>0,1,0)) as leaves,sum(if(ph>0,1,0)) as ph,sum(if(lop>0,1,0)) as lop,sum(overtime) as ot from hr_muster m,hr_empmaster e where e.idno=m.idno and e.jobtype=1 and e.project="+rs.getInt("tranid")+" and attdate='"+fromdate+"' and e.workingdivisionid="+division+" group by e.project";
+				 rs1 = statement1.executeQuery(sql1);
+				 System.out.println("ssssssssssssssql1111111 = "+sql1);				 
+				 if(rs1.next()) {
+					 map.put("empPresent", rs1.getInt("pre"));
+					 map.put("empOD", rs1.getInt("od"));				 
+					 map.put("empWH", rs1.getInt("wh"));
+					 map.put("empLeaves", rs1.getInt("leaves"));
+					 map.put("empPH", rs1.getInt("ph"));
+					 map.put("empLOP", rs1.getInt("lop"));
+					 map.put("empOT", rs1.getInt("ot"));
+					 map.put ("employeeTotal",employeeTotal+rs1.getInt("pre"));
+				 }
+				 /*map.put ("employeeTotal",employeeTotal+rs1.getInt("pre"));
+				 map.put("odTotal", odTotal+rs1.getInt("od"));				 
+				 map.put("woffTotal", woffTotal+rs1.getInt("wh"));
+				 map.put("leaveTotal", leaveTotal+rs1.getInt("leaves"));
+				 map.put("phTotal", phTotal+rs1.getInt("ph"));
+				 map.put("lopTotal", lopTotal+rs1.getInt("lop"));
+				 map.put("employeeOtTotal",employeeOtTotal+ rs1.getInt("ot"));*/
+				 sql2="select e.project,sum(if(present>0,1,0)) as pre,sum(if(od>0,1,0)) as od,sum(if(wh>0,1,0)) as wh,sum(if(leaves>0,1,0)) as leaves,sum(if(ph>0,1,0)) as ph,sum(if(lop>0,1,0)) as lop,sum(overtime) as ot from hr_muster m,hr_empmaster e where e.idno=m.idno and e.jobtype=2 and e.project="+rs.getInt("tranid")+" and attdate='"+fromdate+"' and e.workingdivisionid="+division+" group by e.project	";
+				 System.out.println("ssssssssssssssql22222 = "+sql2);
+				 rs2 = statement2.executeQuery(sql2);
+				 if(rs2.next()) {
+					 map.put("conPresent", rs2.getInt("pre"));
+					 map.put("empOT", rs2.getInt("ot"));
+					 map.put ("contractTotal",contractTotal+rs2.getInt("pre"));
+				 }
+				 
+				 map.put("remarks", 14);
+				 
+				 
+				 listemployeeAndcontract.add(map);
+                 System.out.println("sssssssssssssslno = "+vslno);
+			 }
+			
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("HRrepot Daoimpl getting error" + e);
+		}
+
+		return listemployeeAndcontract    ;
+	}
+
+	
+	@Override
+	public List<Map<String,Object>> getDailyAttendenceReport(int division) {
+		Connection connection=null;
+		Statement statement=null;
+		Statement statement1=null;
+		Statement statement2=null;		
+		ResultSet rs =null;
+		ResultSet rs1 = null;
+		ResultSet rs2 = null;
+		 connection = DBUtil.getConnection();
+		List<Map<String, Object>> listemployeeAndcontract = new ArrayList<Map<String, Object>>();
+		/*List<Object> list = new ArrayList<Object>();*/
+		try {
+			 statement = connection.createStatement();
+			 statement1 = connection.createStatement();
+			 statement2 = connection.createStatement();
+			//String employee = "select emp1.idno,count(m.present) , sum(m.overtime) ,count(m.od) , count(m.ph) , count(m.leaves) , count(m.lop) , count(m.wh) from hr_muster m join hr_empmaster emp1 on m.idno=emp1.idno join hr_jobtype j on j.tranid=emp1.jobtype  where j.tranid=1  group by emp1.idno  ";
+			 String sql = "select distinct e.empname,e.idno,e.desgn,d.name from hr_muster h join hr_empmaster e on e.idno=h.idno join hr_department d on d.deptid=e.workdeptid where h.tmon=8 and h.tyear=2019 and e.workingdivisionid="+division;
+			 rs = statement.executeQuery(sql);
+			 int vslno=0;
+			 String sql1="";
+			 String sql2="";
+                         String ltype="";
+                         String remarks="";
+                         float lopcount=0;
+                         float leavecount=0;        
+			 while(rs.next()) {
+				 Map<String, Object> map = new HashMap<String, Object>();
+				 
+				 vslno=vslno+1;
+				 map.put("slno", vslno);
+				 map.put("EmployeeName", rs.getString("empname"));
+				 sql1="select *,day(attdate) as d from hr_muster h  where h.tmon=8 and h.tyear=2019 and h.idno="+rs.getInt("idno")+ " order by attdate";
+				 rs1 = statement1.executeQuery(sql1);
+                                 int i=1;
+                                 int j=1;
+				 while(rs1.next()) {
+                                     j=rs1.getInt("d");
+                                      if (i<32){
+                                        while(i<j){
+                                            map.put("C"+i, "-");
+                                            i=i+1;
+                                        }  
+                                        if(j==i){  
+                                          if(rs1.getInt("present")>0){
+                                              if(rs1.getInt("present")==1){
+                                                  map.put("C"+i, "P");
+                                              }else{
+                                                  map.put("C"+i, "P/");
+                                              }
+                                              
+                                          } else if(rs1.getInt("lop")>0){
+                                              if(rs1.getInt("lop")==1){
+                                                  map.put("C"+i, "<font color='red'>A</font>");
+                                              }else{
+                                                       map.put("C"+i, "A/");                                                 
+                                              }
+                                              
+                                          } 
+                                          if(rs1.getInt("leaves")>0){
+                                              if(rs1.getInt("clcount")>0){
+                                                  ltype="CL";                                                 
+                                              }else if(rs1.getInt("slcount")>0){
+                                                  ltype="SL";
+                                              }else if(rs1.getInt("elcount")>0){
+                                                  ltype="EL";
+                                              }else if(rs1.getInt("cocount")>0){
+                                                  ltype="CO";
+                                              }
+                                              map.put("C"+i, "<font color='lightgreen'>"+ltype+"</font>");
+                                          } else if(rs1.getInt("wh")>0){
+                                              map.put("C"+i, "WO");
+                                          } else if(rs1.getInt("ph")>0){
+                                              map.put("C"+i, "PH");
+                                          } else if(rs1.getInt("od")>0){
+                                              map.put("C"+i, "OD");
+                                          }
+                                        } 
+                                        i=j+1;
+//                                         i=i+1;
+                                      }                                      
+				 }
+                                 while(i<32){
+                                      map.put("C"+i, "-");
+                                      i=i+1;
+                                 }  
+                                 
+//                                 lopcount=Float.valueOf(constants.getFieldValue("HRMS","select COALESCE(sum(lop),0) from hr_muster where idno="+rs.getInt("idno")+" and lop>0",1));
+//                                 leavecount=Float.valueOf(constants.getFieldValue("HRMS","select COALESCE(sum(leaves),0) from hr_muster where idno="+rs.getInt("idno")+" and leaves>0",1));
+                                 remarks="";
+//                                 remarks=remarks + "LOP("+ lopcount +") ";
+//                                 remarks=remarks + "Leaves("+leavecount+") ";
+                                 map.put("Remarks",remarks);
+				 listemployeeAndcontract.add(map);
+                                 
+			 }
+			
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("HRrepot Daoimpl getting error" + e);
+		}
+
+		return listemployeeAndcontract    ;
+	}        
+
+
+        
+	@Override
+	public  List<Map<String, Object>> getEmployeeLeaveRegister(int division, int project,final String fromdate,final String todate)  {
+                    List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                    int[] ltypeId = new int[10];
+                    String[] ltypeName=new String[10];
+                    int i=0;						 
+                    Connection connection=null;
+                    Statement statement=null;
+                    Statement stmt=null;
+                    ResultSet rs =null;
+                    ResultSet rs1 =null;
+                    ResultSet rs2 =null;
+                    connection = DBUtil.getConnection();
+                     try {
+			statement = connection.createStatement();
+			stmt = connection.createStatement();                        
+			String sql="select   * from hr_leavetypes where isactive=1 and isdisplay=1 ";
+			rs1 = statement.executeQuery(sql);								
+                         while(rs1.next()) {
+                                 ltypeId[i]=rs1.getInt("transid");
+                                 ltypeName[i]=rs1.getString("leavetype");
+                                 i=i+1;
+                         }
+                        rs1.close();
+                        float balance=0.0f;  
+			String sql2="select h.idno,h.empname,h.desgn,dept.name   from hr_empmaster h left join hr_department dept on h.workdeptid=dept.deptid   where h.workingdivisionid="+ division + " and h.project=" + project + " and  h.empleft=0  ";                                                         
+			rs = statement.executeQuery(sql2);								                        
+                        while (rs.next()) {
+                                int j=0;
+
+                                Map<String, Object> map=new HashMap<String,Object>();
+                                map.put("idno", rs.getInt("idno"));
+                                map.put("empname",rs.getString("empname"));
+                                map.put("desgn", rs.getString("desgn"));
+                                map.put("name", rs.getString("name"));
+                                map.put("fromdate","Op.Bal");
+                                map.put("todate","");
+                                while( j<i) {
+                                        balance = constants.getLeaveBalance(rs.getInt("idno"), fromdate, ltypeId[j]);
+                                         map.put(ltypeName[j], balance);
+                                         j=j+1;
+                                }
+                                list.add(map);
+
+                                String sql1 = "select  leavetypeid,fromdate,todate,noofdays,reasonforleave  from hr_leavedebits where idno="+ rs.getInt("idno")+" and fromdate>='" +fromdate + "' and todate<='" + todate +"'";
+                                 rs2 = stmt.executeQuery(sql1);
+                                 j=1;
+                                 while(rs2.next())
+                                 {
+                                    Map<String, Object> map1=new HashMap<String,Object>(); 
+                                    map1.put("idno", rs.getInt("idno"));
+                                    map1.put("empname","");
+                                    map1.put("desgn", "");
+                                    map1.put("name", "");
+                                    map1.put("fromdate",rs2.getString("fromdate"));
+                                    map1.put("todate",rs2.getString("todate"));
+                                    if(rs2.getInt("leavetypeid")==1){
+                                        map1.put("CL",rs2.getFloat("noofdays"));
+                                    }else{
+                                        map1.put("CL","");
+                                    }
+                                    if(rs2.getInt("leavetypeid")==2){
+                                        map1.put("SL",rs2.getFloat("noofdays"));
+                                    }else{
+                                        map1.put("SL","");
+                                    }
+                                    if(rs2.getInt("leavetypeid")==3){
+                                        map1.put("EL",rs2.getFloat("noofdays"));
+                                    }else{
+                                        map1.put("EL","");
+                                    }
+                                    if(rs2.getInt("leavetypeid")==4){
+                                        map1.put("CO",rs2.getFloat("noofdays"));
+                                    }else{
+                                        map1.put("CO","");
+                                    }
+
+//                                    map1.put("noofdays",rs2.getInt("noofdays"));
+//							    map1.put("reasonforleave",rs2.getString("reasonforleave"));								 
+                                    list.add(map1);
+                                 }
+                                 rs2.close();
+                                 int k=0;
+                        }
+                    } catch (SQLException e) {
+
+                            e.printStackTrace();
+                    }
+
+                    return list;
+                }
+
+//				});
+//	
+//	}
+	/*
+	 * @Override public List<Map<String,Object>> getLeaveBalances() { Connection
+	 * connection=null; Statement statement=null; Statement statement1=null;
+	 * Statement statement2=null; Statement statement3=null; ResultSet rs =null;
+	 * ResultSet rs1 = null; ResultSet rs2 = null; ResultSet rs3 = null; connection
+	 * = DBUtil.getConnection(); List<Map<String, Object>> leavelist = new
+	 * ArrayList<Map<String, Object>>(); try { statement =
+	 * connection.createStatement(); statement1 = connection.createStatement();
+	 * statement2 = connection.createStatement(); statement3 =
+	 * connection.createStatement(); String sql =
+	 * "select emp.idno, ld.noofdays from hr_leavedebits ld join hr_empmaster emp on  emp.idno=ld.idno  where  leavetypeid=1 group by ld.idno;"
+	 * ; rs = statement.executeQuery(sql); String
+	 * sql1="select emp.idno, ld.noofdays from hr_leavedebits ld join hr_empmaster emp on  emp.idno=ld.idno  where  leavetypeid=2 group by ld.idno;"
+	 * ; String
+	 * sql2="select emp.idno, ld.noofdays from hr_leavedebits ld join hr_empmaster emp on  emp.idno=ld.idno  where  leavetypeid=3 group by ld.idno;"
+	 * ; String
+	 * sql3="select emp.idno, ld.noofdays from hr_leavedebits ld join hr_empmaster emp on  emp.idno=ld.idno  where  leavetypeid=4 group by ld.idno;"
+	 * ; while(rs.next()) { Map<String, Object> map = new HashMap<String, Object>();
+	 * map.put("cl",rs.getInt("noofdays")); map.put("idno",rs.getInt("idno"));
+	 * 
+	 * rs1 = statement1.executeQuery(sql1); if(rs1.next()) { map.put("sl",
+	 * rs1.getInt("noofdays")); map.put("idno",rs.getInt("idno")); } rs2 =
+	 * statement2.executeQuery(sql2); if(rs2.next()) { map.put("el",
+	 * rs1.getInt("noofdays")); map.put("idno",rs.getInt("idno")); } rs3 =
+	 * statement3.executeQuery(sql3); if(rs3.next()) { map.put("co",
+	 * rs1.getInt("noofdays")); map.put("idno",rs.getInt("idno")); }
+	 * 
+	 * 
+	 * leavelist.add(map);
+	 * 
+	 * }
+	 * 
+	 * connection.close(); } catch (Exception e) { e.printStackTrace();
+	 * System.out.println("HRrepot Daoimpl getting error" + e); }
+	 * 
+	 * return leavelist ; }
+	 */
+}

@@ -1,0 +1,26 @@
+package com.hrms.dtos;
+
+public class ContractorDocumentsDTO {
+	private int tranid;
+	private int contractorid;
+	private byte[] documentdetails;
+	public int getTranid() {
+		return tranid;
+	}
+	public void setTranid(int tranid) {
+		this.tranid = tranid;
+	}
+	public int getContractorid() {
+		return contractorid;
+	}
+	public void setContractorid(int contractorid) {
+		this.contractorid = contractorid;
+	}
+	public byte[] getDocumentdetails() {
+		return documentdetails;
+	}
+	public void setDocumentdetails(byte[] documentdetails) {
+		this.documentdetails = documentdetails;
+	}
+	
+}

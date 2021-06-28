@@ -1,0 +1,121 @@
+<%@include file="header.jsp" %>
+<script>
+
+$(document).ready(function() {
+	var date=new Date();
+	var val=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+(date.getDate()-1);
+	document.getElementById("date").value=val;
+	 abcd(val);
+} );
+	</script>
+	<script>
+function dummy() {
+	
+	  $(document).ready(function() {
+		  var val=document.getElementById("date").value;
+		  abcd(val);
+		} );
+	 // //alert(val);
+	 
+	
+} 
+	</script>
+<script>
+function abcd(val){
+$(document).ready(function() {
+	var table=$('#attendence').dataTable({
+			 destroy: true,
+		    searching: false,
+			 "ajax" : {
+			"url" : "/infotech/Attendencelist?date="+val,
+			"dataSrc" : "dataBean",
+			"type" : "GET",
+			
+		       },
+		      
+			"columns": [
+							{ data: "tranId"},
+			 				{ data: "idNo"},
+			 				{ data: "attendanceDate"},
+					 		{ data: "shiftTime"},
+ 							{ data: "shiftId"},
+							{ data: "inPunchCount"},
+							{ data: "outPunchCount"},
+							{
+				                data: null,
+				                className: "center",
+				                defaultContent: '<button class="btnSelect" data-toggle="modal" data-target="#myModal">Select</button>'				            }
+					],
+		
+		} );
+	  
+} );
+
+
+}
+
+
+</script>
+<div>
+
+Date:<input type="text" id="date" ><input type="submit" onclick="dummy()"></div>
+<table id="attendence" class="display" style="width:100%" border="1">
+        <thead>
+            <tr>
+           		 <th>tranId</th>
+                <th>idNo</th>
+               <th>attendanceDate</th>
+                <th>shiftTime</th>
+                <th>shiftId</th>
+                <th>inPunchCount</th>
+                <th>outPunchCount</th>
+              	<th> Action</th>
+                
+            </tr>
+        </thead>
+       
+    </table>
+    <div class="modal" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+       <div id="datas"></div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <script>
+function get(){
+	//alert();
+
+}
+</script>
+<script>
+$(document).ready(function(){
+     $("#attendence").on('click', '.btnSelect', function() {
+      // get the current row
+      var currentRow = $(this).closest("tr");
+      var idno = currentRow.find("td:eq(1)").html(); // get current row 1st table cell TD value
+      var date = currentRow.find("td:eq(2)").html(); // get current row 2nd table cell TD value
+     //alert(idno);
+     inTOModalBox(idno,date);
+    });
+
+ });
+ 
+
+</script>

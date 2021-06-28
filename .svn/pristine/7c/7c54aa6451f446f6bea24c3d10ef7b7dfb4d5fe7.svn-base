@@ -1,0 +1,7 @@
+#Database related properties
+database.driver=com.mysql.jdbc.Driver
+database.url=jdbc:mysql://35.154.151.16:3306/hrms
+database.user=erpuser
+database.password=erpuser
+
+#database.url=jdbc:mysql://35.154.151.16:3306/hrms

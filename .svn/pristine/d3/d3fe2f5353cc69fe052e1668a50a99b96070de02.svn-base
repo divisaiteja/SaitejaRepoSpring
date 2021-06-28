@@ -1,0 +1,45 @@
+package com.hrms.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hrms.Dao.ContractDao;
+import com.hrms.Dao.DivisionDao;
+import com.hrms.dtos.ContractorMasterDTO;
+@Service
+public class ContractorServiceImpl implements ContractorService {
+	@Autowired 
+	private ContractDao contractDao;
+	@Override
+	public List<ContractorMasterDTO> getAllContracts() {
+		// TODO Auto-generated method stub
+		return contractDao.getAllContracts();
+	}
+
+	@Override
+	public String saveNewContractor(ContractorMasterDTO contractorMasterDTO) {
+		// TODO Auto-generated method stub
+		return contractDao.saveNewContractor(contractorMasterDTO);
+	}
+
+	@Override
+	public String editContractor(ContractorMasterDTO contractorMasterDTO) {
+		// TODO Auto-generated method stub
+		return contractDao.editContractor(contractorMasterDTO);
+	}
+
+	@Override
+	public void deleteContractor(int contractorId) {
+		this.contractDao.deleteContractor(contractorId);
+
+	}
+
+	@Override
+	public List<ContractorMasterDTO> getContractor(int contractorId) {
+		// TODO Auto-generated method stub
+		return contractDao.getContractor(contractorId);
+	}
+
+}

@@ -1,0 +1,13 @@
+
+#database.url=jdbc:mysql://35.154.151.16:3306/hrms
+#Database related properties
+database.driver=com.mysql.jdbc.Driver
+database.url=jdbc:mysql://35.154.151.16:3306/hrms
+#database.url=jdbc:mysql://localhost:3306/emansys
+#database.url=jdbc:mysql://35.154.151.16:3306/yalavarti
+database.user=erpuser
+database.password=erpuser
+
+#directoryFolder=E:\\WORKSPACE8MAY\\DASHBOARD\\src\\main\\webapp\\resources\\theme\\CustomDirectory
+
+#directoryFolder1=E:\\WORKSPACE8MAY\\DASHBOARD\\src\\main\\webapp\\resources\\theme\\EmployeeImages

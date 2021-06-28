@@ -1,0 +1,10 @@
+<% 
+int division=Integer.parseInt(request.getParameter("division"));
+int year=Integer.parseInt(request.getParameter("year"));
+int month=Integer.parseInt(request.getParameter("month"));
+%>
+
+<input type="hidden" id="division" <%=division %>>
+<input type="hidden" id="year" <%=year %>>
+<input type="hidden" id="month" <%=month %>>
+<h3 style="color:red" align="center">OTHER DEDUCTION</h3>

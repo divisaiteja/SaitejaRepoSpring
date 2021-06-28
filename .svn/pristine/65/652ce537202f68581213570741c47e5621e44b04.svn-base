@@ -1,0 +1,86 @@
+<%@include file="header.jsp" %>
+<div id="key_filter">
+<div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+            data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="true">Filter records by status <span
+            class="caret"></span>
+    </button>
+    <ul class="dropdown-menu alertFilter" aria-labelledby="dropdownMenu1">
+        <li id="keySuccess"><a href="#"><strong>Success</strong></a></li>
+        <li id="keyDanger"><a href="#"><strong>Danger</strong></a></li>
+        <li id="keyWarning"><a href="#"><strong>Warning</strong></a></li>
+        <li id="keyAll"><a href="#"><strong>Display All</strong></a></li>
+    </ul>
+</div>
+</div>
+<table id="tbl" data-toggle="table" data-show-columns="true" data-search="true" data-pagination="true"
+   data-page-list="[10, 20, 50, 100, All]" data-classes="table table-hover"
+   data-toolbar="#key_filter" data-show-pagination-switch="true">
+<thead>
+<tr>
+    <th data-sortable="true">Name</th>
+    <th data-sortable="true">Phone of...</th>
+    <th data-sortable="true">Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="warning" data-ss-key="warning">
+    <td>name1</td>
+    <td>phone1</td>
+    <td>why warning ?</td>
+</tr>
+<tr class="success" data-ss-key="success">
+    <td>name1</td>
+    <td>phone1</td>
+    <td>why warning ?</td>
+</tr>
+<tr class="danger" data-ss-key="danger">
+    <td>name1</td>
+    <td>phone1</td>
+    <td>why warning ?</td>
+</tr>
+</tbody>
+</table>
+<script>
+var $table = $('#tbl'),
+data = [];
+
+$(function () {
+data = $('#tbl').bootstrapTable('getData');
+
+$('#keySuccess').click(function () {
+    $("tr[data-ss-key]").hide();
+    superText = $('#keySuccess').text();
+    $('#dropdownMenu1').html(superText+' <span class="caret"></span>');
+    $('#dropdownMenu1').css('background','#03a678');
+    filterData('success');
+});
+$('#keyDanger').click(function () {
+    $("tr[data-ss-key]").hide();
+    superText = $('#keyDanger').text();
+    $('#dropdownMenu1').html(superText+' <span class="caret"></span>');
+    $('#dropdownMenu1').css('background','#ef4836');
+    filterData('danger');
+});
+$('#keyWarning').click(function () {
+    $("tr[data-ss-key]").hide();
+    superText = $('#keyWarning').text();
+    $('#dropdownMenu1').html(superText+' <span class="caret"></span>');
+    $('#dropdownMenu1').css('background','#f39c12');
+    filterData('warning');
+});
+$('#keyAll').click(function () {
+    superText = $('#keyAll').text();
+    $('#dropdownMenu1').html('Filter supervisions by status'+' <span class="caret"></span>');
+    $('#dropdownMenu1').css('background','none');
+    filterData();
+});
+});
+function filterData(type) {
+$table.bootstrapTable('load', $.grep(data, function (row) {
+    return !type || row._class === type;
+}));
+}
+</script>
+<%@include file="footer.jsp" %>

@@ -1,0 +1,9 @@
+.has-error .form-control-feedback,.help-block {
+    color: #a94442;
+}
+.has-error .form-control{
+border: 1px solid #a94442;
+}
+.has-success .form-control{
+border: 1px solid #45A163;
+}

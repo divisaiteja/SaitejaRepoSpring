@@ -1,0 +1,438 @@
+<%@include file="header.jsp" %>
+<script>
+$(document).ready( function() {
+        $.ajax({
+            type: "GET",
+            url: 'getBarGraphs',
+            dataType: "json",
+            contentType: "application/json",
+            crossDomain: true,
+            success: function (data) {
+                // Populate series
+                var processedjson = new Array();
+                var departmentnames =[];
+                var divisionnames = [];
+                for (i = 0; i < data.length; i++) {
+                	departmentnames.push(data[i].departmentName);
+                	divisionnames.push(data[i].divisionName);
+                    processedjson.push(parseInt(data[i].count));
+                }
+
+                var series = [];
+                for(i = 0;i<divisionnames.length;i++){
+                   series.push(
+                           {
+                               name: divisionnames[i],
+                               colorByPoint: true,
+                               data: processedjson,
+                           }
+                       );
+                     
+                       
+                   
+               } 
+                // draw chart
+                Highcharts.chart('chart1',{
+                 
+                    chart: {
+                        type: 'column'
+                      },
+                      title: {
+                        text: 'DEPARTMENT WISE GRAPH'
+                      },
+                    
+                      xAxis: {
+                        
+                    	  categories:departmentnames
+                      },
+                      yAxis: {
+                        title: {
+                          text: 'count'
+                        }
+
+                      },
+                      legend: {
+                        enabled: false
+                      },
+                      plotOptions: {
+                        series: {
+                          borderWidth: 0,
+                          dataLabels: {
+                            enabled: true,
+                            format: '{point.y:.1f}%'
+                          }
+                        }
+                      },
+
+                      tooltip: {
+                        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+                      },
+
+                      series:series
+                   
+ });
+            }
+            });
+
+
+        $.ajax({
+     	type: "GET",
+     	url: "getDivisionBarGraphs",
+        success : function(data) {            
+        	// Populate series
+            var processed_json = new Array();
+            var projectnames = new Array();
+            var divisionnames = [];
+            for (i = 0; i < data.length; i++) {
+                   divisionnames.push(data[i].divisionName);
+                   projectnames.push([data[i].projectName]);
+                   processed_json.push([parseInt(data[i].count)]);
+            }  
+                 var series = [];
+                 for(i = 0;i<divisionnames.length;i++){
+                    series.push({
+                        name: divisionnames[i],
+                        data: processed_json,
+                    });
+                } 
+            Highcharts.chart('chart2',{
+                chart: {
+                    type: "column"
+                },
+                title: {
+                    text: "DIVISION AND PROJECT WISE GRAPH"
+                },
+                xAxis: {
+                    categories: projectnames
+
+                  },
+                  yAxis: {
+                    min: 0,
+                    title: {
+                      text: 'Count'
+                    }
+                  },
+                tooltip: {
+                	 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                	    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                	      '<td style="padding:0"><b>{point.y:.1f}%</b></td></tr>',
+                	    footerFormat: '</table>',
+                	    shared: true,
+                	    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                      pointPadding: 0.2,
+                      borderWidth: 0
+                    }
+                  }, 
+                  series:series
+            });              
+         }
+            
+        });
+});
+ 
+ function openGraph3(){
+	
+	var str = $("#graph3").val();
+	////alert(str);
+	var str_array = str.split(',');
+	var i1=parseInt(str_array[1]);//count of 1st getvalue from text box
+	var i2=parseInt(str_array[3]);
+	var i3=parseInt(str_array[5]);
+	var i4=parseInt(str_array[7]);
+	var i5=parseInt(str_array[9]);
+	var i6=parseInt(str_array[11]);
+	var v=0;
+	
+	Highcharts.chart('chart3', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Attendance Status'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.y} ',
+                style: {
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                }
+            }
+        }
+    },
+    series: [{
+        name: 'Yalavarti Projects',
+        colorByPoint: true,
+        data: [{
+            name: "Present",
+            y: 73,
+            sliced: true,
+        },
+        {
+            name: "On Leave",
+            y: 20
+           
+        },
+        {
+            name: "On Duty",
+            y: 2
+           
+        },
+        {
+            name: "Absent",
+            y: 5
+           
+        }
+        
+        ]
+    }]
+});
+}
+
+ function openGraph4(){
+	
+
+	var str = $("#graph4").val();
+	////alert(str);
+	var str_array = str.split(',');
+	var i1=parseInt(str_array[1]);//count of 1st getvalue from text box
+	var i2=parseInt(str_array[3]);
+//	var i3=parseInt(str_array[5]);
+//	var i4=parseInt(str_array[7]);
+//	var i5=parseInt(str_array[9]);
+//	var i6=parseInt(str_array[11]);
+	var v=0;
+	
+	Highcharts.chart('chart4', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'column'
+    },
+    title: {
+        text: 'Absentisum % At A Glance'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+        column: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.y} ',
+                style: {
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                }
+            }
+        }
+    },
+    series: [{
+        name: 'Yalavarti Engineering',
+        colorByPoint: false,
+        data: [{
+            name: "Jan",
+            y: 0.50,
+        },
+        {
+            name: "Feb",
+            y: 1.75
+           
+        },
+        {
+            name: "Mar",
+            y: 1.69
+           
+        },
+        {
+            name: "Apr",
+            y: 1.00
+           
+        },{
+            name: "May",
+            y: 1.35
+           
+        },{
+            name: "Jun",
+            y: 1.70
+           
+        },{
+            name: "Jul",
+            y: 1.20
+           
+        },{
+            name: "Aug",
+            y: 0
+           
+        },{
+            name: "Sep",
+            y: 0
+           
+        },{
+            name: "Oct",
+            y: 0
+           
+        },{
+            name: "Nov",
+            y: 0
+           
+        },{
+            name: "Dec",
+            y: 0
+           
+        }
+    ]},
+        {
+        name: 'Yalavarti Projects',
+        colorByPoint: false,
+        data: [{
+            name: "Jan",
+            y: 0.25,
+        },
+        {
+            name: "Feb",
+            y: 1.00
+           
+        },
+        {
+            name: "Mar",
+            y: 0.69
+           
+        },
+        {
+            name: "Apr",
+            y: 0.50
+           
+        },{
+            name: "May",
+            y: 1.35
+           
+        },{
+            name: "Jun",
+            y: 1.10
+           
+        },{
+            name: "Jul",
+            y: 0.20
+           
+        },{
+            name: "Aug",
+            y: 0
+           
+        },{
+            name: "Sep",
+            y: 0
+           
+        },{
+            name: "Oct",
+            y: 0
+           
+        },{
+            name: "Nov",
+            y: 0
+           
+        },{
+            name: "Dec",
+            y: 0
+           
+        }                
+  
+        ]
+    }]
+});
+}
+</script>
+<input type="hidden" id="graph1">
+<input type="hidden" id="graph2">
+<input type="hidden" id="graph3">
+<input type="hidden" id="graph4">
+<input type="hidden" id="graph5">
+<input type="hidden" id="graph6">
+
+
+
+<div class="row" style="border-bottom:2px solid">
+    <div class="col-md-6" id="chart1" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div>
+   <div class="col-md-6" id="chart2" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div>
+   </div>
+   
+   <div class="row" style="border-bottom:2px solid">
+    <div class="col-md-6" id="chart3" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div>
+   <div class="col-md-6" id="chart4" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div> 
+   
+   </div>
+  
+
+                  
+                  <div class="row" style="border-bottom:2px solid">
+                    <div class="col-md-6">
+                        <div id="chart1" ></div>
+                    </div>
+                    <div class="col-md-6">  
+                        <div id="chart2"></div>
+                    </div>
+                  </div>
+                  <div class="row" style="border-bottom:2px solid">
+                    <div class="col-md-6">
+                        <div id="chart3" ></div>
+                    </div>
+                    <div class="col-md-6">  
+                        <div id="chart4"></div>
+                    </div>
+                  </div>
+                  <div class="row" style="border-bottom:2px solid">
+                    <div class="col-md-6">
+                        <div id="chart5" ></div>
+                    </div>
+                    <div class="col-md-6">  
+                        <div id="chart6"></div>
+                    </div>
+                  </div>
+
+<div class="row" style="border-bottom:2px solid">
+    <div class="col-md-6" id="chart1" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div>
+   <div class="col-md-6" id="chart2" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div>
+   </div>
+   
+   <div class="row" style="border-bottom:2px solid">
+    <div class="col-md-6" id="chart3" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div>
+   <div class="col-md-6" id="chart4" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div> 
+   
+   </div>
+
+   <div class="row" style="border-bottom:2px solid">
+    <div class="col-md-6" id="chart5" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div>
+   <div class="col-md-6" id="chart6" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+   </div> 
+   
+   </div>
+
+
+
+<script src="resources/dist/js/sidebarmenu.js"></script>
+
+  <%@include file="footer.jsp"%>

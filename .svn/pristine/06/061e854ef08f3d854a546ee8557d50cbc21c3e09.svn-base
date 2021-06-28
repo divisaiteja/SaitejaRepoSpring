@@ -1,0 +1,163 @@
+package com.hrms.controller;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.hrms.dtos.BaseResponseDTO;
+import com.hrms.dtos.EducationDetailsDTO;
+import com.hrms.dtos.EmployeeMasterDTO;
+import com.hrms.dtos.EmployeeShiftScheduleDTO;
+import com.hrms.dtos.ExperienceDetailsDTO;
+import com.hrms.dtos.FamilyDetailsDTO;
+import com.hrms.dtos.PersonalDetailsDTO;
+import com.hrms.dtos.SalaryDetailsDTO;
+import com.hrms.service.HrReportServices;
+
+@Controller
+public class HrReportController {
+
+	@Autowired
+	private HrReportServices hrReportServices;
+
+	@RequestMapping(value = "report", method = RequestMethod.GET)
+	public ModelAndView hrrepoter() {
+		return new ModelAndView("HrReport");
+	}
+
+	@RequestMapping(value = "getEmpJobDetails", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public BaseResponseDTO getEmpJobDetails(@RequestParam(value = "division") int division,
+			@RequestParam(value = "project") int project) {
+		List<EmployeeMasterDTO> getEmpJobDetails = hrReportServices.getEmpJobDetails(division, project);
+		BaseResponseDTO response = new BaseResponseDTO();
+		response.setDataBean(getEmpJobDetails);
+		return response;
+
+	}
+
+	@RequestMapping(value = "getPersonlDetails", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public BaseResponseDTO getPersonlDetails(@RequestParam(value = "division") int division,
+			@RequestParam(value = "project") int project) {
+		List<PersonalDetailsDTO> personalDetails = hrReportServices.getPersonalDetails(division, project);
+		BaseResponseDTO response = new BaseResponseDTO();
+		response.setDataBean(personalDetails);
+		return response;
+
+	}
+
+	@RequestMapping(value = "getFamilyDetails", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public BaseResponseDTO getFamilyDetails(@RequestParam(value = "division") int division,
+			@RequestParam(value = "project") int project) {
+		List<FamilyDetailsDTO> familyDetails = hrReportServices.getFamilyDetails(division, project);
+		BaseResponseDTO response = new BaseResponseDTO();
+		response.setDataBean(familyDetails);
+		return response;
+
+	}
+
+	@RequestMapping(value = "getExperienceDetails", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public BaseResponseDTO getExperienceDetails(@RequestParam(value = "division") int division,
+			@RequestParam(value = "project") int project) {
+		List<ExperienceDetailsDTO> experienceDetails = hrReportServices.getExperienceDetails(division, project);
+		BaseResponseDTO response = new BaseResponseDTO();
+		response.setDataBean(experienceDetails);
+		return response;
+
+	}
+
+	@RequestMapping(value = "getEducationDetails", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public BaseResponseDTO getEducationDetails(@RequestParam(value = "division") int division,
+			@RequestParam(value = "project") int project) {
+		List<EducationDetailsDTO> educationDetails = hrReportServices.getEducationDetails(division, project);
+		BaseResponseDTO response = new BaseResponseDTO();
+		response.setDataBean(educationDetails);
+		return response;
+
+	}
+
+	@RequestMapping(value = "getEmployeeShiftsDetails", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public BaseResponseDTO getEmployeeShiftsDetails(@RequestParam(value = "division") int division,
+			@RequestParam(value = "project") int project) {
+		List<EmployeeShiftScheduleDTO> employeeShiftSchedule = hrReportServices.getEmployeeShiftSchedule(division,
+				project);
+		BaseResponseDTO response = new BaseResponseDTO();
+		response.setDataBean(employeeShiftSchedule);
+		return response;
+
+	}
+
+	@RequestMapping(value = "getSalaryDetails", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public BaseResponseDTO getSalaryDetails(@RequestParam(value = "division") int division,
+			@RequestParam(value = "project") int project) {
+		List<SalaryDetailsDTO> salaryDetails = hrReportServices.getSalaryDetails(division, project);
+		BaseResponseDTO response = new BaseResponseDTO();
+		response.setDataBean(salaryDetails);
+		return response;
+
+	}
+
+
+	@RequestMapping(value = "getDailyAttendenceReport", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public List<Map<String,Object>>  getDailyAttendenceStrenthReport(@RequestParam(value="division") int division,HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
+		List<Map<String,Object>> dailyAttendenceReport = hrReportServices.getDailyAttendenceReport(division);
+		request.setAttribute("listEmployees", dailyAttendenceReport);
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("GetDailyAttendenceStatement.jsp?division="+division);
+		requestDispatcher.forward(request, response);
+		response.reset();
+		response.getOutputStream();
+		return dailyAttendenceReport;
+	}
+        
+        
+        
+	@RequestMapping(value = "getEmployeeLeaveRegister", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public BaseResponseDTO getEmployeeLeaveRegister(@RequestParam(value = "division") int division,
+			@RequestParam(value = "project") int project,@RequestParam(value = "fromdate") String fromdate,
+			@RequestParam(value = "todate") String todate) {
+		 List<Map<String, Object>> employeeLeaveRegister = hrReportServices.getEmployeeLeaveRegister(division, project,fromdate,todate);
+		BaseResponseDTO response = new BaseResponseDTO();
+		response.setDataBean(employeeLeaveRegister);
+		return response;
+
+	}
+
+	@RequestMapping(value = "getDailyAttendenceStrenthReport", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public List<Map<String, Object>> getDailyAttendenceStrenthReport(@RequestParam(value = "division") int division,
+			@RequestParam(value = "fromdate") String fromdate, HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		List<Map<String, Object>> dailyAttendenceStrenthReport = hrReportServices
+				.getDailyAttendenceStrenthReport(division, fromdate);
+		request.setAttribute("listEmployees", dailyAttendenceStrenthReport);
+		RequestDispatcher requestDispatcher = request
+				.getRequestDispatcher("GetDailyAttendenceReport.jsp?division=" + division + "&&fromdate=" + fromdate);
+		requestDispatcher.forward(request, response);
+		response.reset();
+		response.getOutputStream();
+		return dailyAttendenceStrenthReport;
+	}
+	
+	
+}

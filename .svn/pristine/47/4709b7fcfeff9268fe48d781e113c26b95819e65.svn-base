@@ -1,0 +1,550 @@
+<%@include file="header.jsp" %>
+ <link rel="stylesheet" type="text/css" href="resources/validation/validation.css" >
+ <style>
+.search-table-outter {
+	overflow-x: scroll;
+}
+</style>     
+<style type="text/css">
+    .box{
+        color: #2C3E50;
+        padding: 20px;
+        display: none;
+        margin-top: 20px;
+    }
+    .permission{ background:#D5D8DC; }
+    .passel{ background: #D5D8DC; }
+    .passsl{ background: #D5D8DC; }
+    .passcl{ background:#D5D8DC; }
+    .passleave{ background: #D5D8DC; }
+    .forgetpunch{ background: #D5D8DC; }
+    .lopintimation{ background: #D5D8DC; }
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("select").change(function(){
+        $(this).find("option:selected").each(function(){
+            var optionValue = $(this).attr("value");
+            if(optionValue){
+                $(".box").not("." + optionValue).hide();
+                $("." + optionValue).show();
+            } else{
+                $(".box").hide();
+            }
+        });
+    }).change();
+});
+</script>
+<script>
+$(document).ready(function(){
+   // $("#warnings").hide();
+    $("#success").hide();
+    $("#successinedit").hide();
+    $("#changeBasedonIdno").hide();
+    $("#permissionsList").hide();
+
+});
+</script>
+<script>
+function permissionList() {
+	var idno = document.getElementById("idno").value;
+	$('#permissionsList').dataTable( {
+		"destroy" : true,
+			 "ajax" : {
+			"url" : "/HRMS/getPermissionsList?idno="+idno,
+			"dataSrc" : "dataBean",
+			"type" : "GET",
+		
+		       },
+			"columns": [
+							{ data: "infodate"},
+							{ data: "permission_mins"},
+							{ data: "permissiontype"},			 				
+					 		{ data: "passel"},
+					 		{ data: "passcl"},
+					 		{ data: "passsl"},
+					 		{ data: "passleave"},
+					 		{ data: "forgotpunch"},
+					 		{ data: "lopintimation"},
+					 		{ data: "remarks"},
+					 		
+							{
+				                data: null,
+				                className: "center",
+				                defaultContent: '<input type="image" src="resources/assets/images/edit-icon.png" height="15" width="15" id="gradeEditing"  > /  <input type="image" src="resources/assets/images/delete.png" id="deleteId" height="15" width="15"  onclick="forDeletion()">'
+				            }
+					],
+		
+		} );
+} 
+</script>
+<script>
+	function getDetailsBasedOnIdno(){
+		var idno = document.getElementById("idno").value;
+		
+   $.ajax({
+		type : "GET",
+		contentType : "application/json",
+		url : "/HRMS/getEmployeeInformationBasedOnIdno?idno="+idno,										
+		success : function(data) {
+			 $("#changeBasedonIdno").show();
+			 $("#permissionsList").show();
+		document.getElementById("empname").value = data[0]["employeeName"];
+		document.getElementById("design").value = data[0]["design"];
+		$("#workdeptname").val(data[0].hrDepartmentMaster.name); 
+		$("#divisionname").val(data[0].divisiondto.name);
+	}
+   
+});
+   permissionList();
+   
+			}
+</script>
+<script>
+function passel(){
+var savePassel = {};
+        savePassel["idno"] = $("#idno").val();
+        savePassel["infodate"] = $("#eldate").val();
+        savePassel["remarks"] = $("#reasonforel").val();
+		$.ajax({
+			type : "post",
+			contentType : "application/json",
+			url : "savePassel", //this is my servlet
+			data : JSON.stringify(savePassel),
+			success : function(data) {
+				
+				$("#successmsg").html(data["successMessage"]);
+				$("#success").show();	
+		        setInterval(function(){
+		        	window.location.reload(); // this will run after every 5 seconds
+		        }, 2000);
+
+			}
+		});
+}
+</script>
+<script>
+function passsl(){
+	var savePasssl = {};
+	        savePasssl["idno"] = $("#idno").val();
+	        savePasssl["infodate"] = $("#sldate").val();
+	        savePasssl["remarks"] = $("#reasonforsl").val();
+			$.ajax({
+				type : "post",
+				contentType : "application/json",
+				url : "savePasssl", //this is my servlet
+				data : JSON.stringify(savePasssl),
+				success : function(data) {
+					
+					$("#successmsg").html(data["successMessage"]);
+					$("#success").show();	
+			        setInterval(function(){
+			        	window.location.reload(); // this will run after every 5 seconds
+			        }, 2000);
+
+				}
+			});
+	}
+	
+</script>
+<script>
+function passcl(){
+	var savePasscl = {};
+	        savePasscl["idno"] = $("#idno").val();
+	        savePasscl["infodate"] = $("#cldate").val();
+	        savePasscl["remarks"] = $("#reasonforcl").val();
+			$.ajax({
+				type : "post",
+				contentType : "application/json",
+				url : "savePasscl", //this is my servlet
+				data : JSON.stringify(savePasscl),
+				success : function(data) {
+					
+					$("#successmsg").html(data["successMessage"]);
+					$("#success").show();	
+			        setInterval(function(){
+			        	window.location.reload(); // this will run after every 5 seconds
+			        }, 2000);
+
+				}
+			});
+	}
+	
+</script>
+<script>
+function passLeave(){
+	var savepassLeave = {};
+	      savepassLeave["idno"] = $("#idno").val();
+	      savepassLeave["infodate"] = $("#passleavedate").val();
+	      savepassLeave["remarks"] = $("#reasonforpassleave").val();
+			$.ajax({
+				type : "post",
+				contentType : "application/json",
+				url : "savePassLeave", //this is my servlet
+				data : JSON.stringify(savepassLeave),
+				success : function(data) {
+					
+					$("#successmsg").html(data["successMessage"]);
+					$("#success").show();	
+			        setInterval(function(){
+			        	window.location.reload(); // this will run after every 5 seconds
+			        }, 2000);
+
+				}
+			});
+	}
+	
+</script>
+<script>
+function forgetPunch(){
+	var forgetPunch = {};
+	    forgetPunch["idno"] = $("#idno").val();
+	    forgetPunch["infodate"] = $("#forgetpunchdate").val();
+	    forgetPunch["remarks"] = $("#reasonforforgetpunch").val();
+
+			$.ajax({
+				type : "post",
+				contentType : "application/json",
+				url : "saveForgetPunch", //this is my servlet
+				data : JSON.stringify(forgetPunch),
+				success : function(data) {
+					
+					$("#successmsg").html(data["successMessage"]);
+					$("#success").show();	
+			        setInterval(function(){
+			        	window.location.reload(); // this will run after every 5 seconds
+			        }, 2000);
+
+				}
+			});
+	}
+	
+</script>
+<script>
+function lopIntimation(){
+	var lopIntimation = {};
+	    lopIntimation["idno"] = $("#idno").val();
+	    lopIntimation["infodate"] = $("#lopintimationdate").val();
+	    lopIntimation["remarks"] = $("#reasonforlopintimation").val();
+			$.ajax({
+				type : "post",
+				contentType : "application/json",
+				url : "saveLopIntimation", //this is my servlet
+				data : JSON.stringify(lopIntimation),
+				success : function(data) {
+					
+					$("#successmsg").html(data["successMessage"]);
+					$("#success").show();	
+			        setInterval(function(){
+			        	window.location.reload(); // this will run after every 5 seconds
+			        }, 2000);
+
+				}
+			});
+	}
+	
+</script>
+<script>
+function addPermission(){
+	var addPermission = {};
+	    addPermission["idno"] = $("#idno").val();
+	    addPermission["infodate"] = $("#permissiondate").val();
+	    addPermission["fromhrs"] = $("#fromtime").val();
+	    addPermission["tohrs"] = $("#totime").val();
+	    addPermission["remarks"] = $("#reasonforpermission").val();
+	    addPermission["permission_mins"] = $("#noofminutes").val();
+	    addPermission["permissiontype"] = $("#permissiontype").val();
+			$.ajax({
+				type : "post",
+				contentType : "application/json",
+				url : "saveAddPermission", //this is my servlet
+				data : JSON.stringify(addPermission),
+				success : function(data) {
+					
+					$("#successmsg").html(data["successMessage"]);
+					$("#success").show();	
+			        setInterval(function(){
+			        	window.location.reload(); // this will run after every 5 seconds
+			        }, 2000);
+
+				}
+			});
+	}
+	
+</script>
+<div>
+    <h3 align="center" style="color: #fb8c00">Permissions</h3>
+</div>
+	<hr color="blue">
+     <div align="left" class="box-content row"  >
+		<div  class="form-group has-warning col-md-3">
+		    <label data-error="wrong" data-success="right"  style="color: Blue">IdNo</label>
+			<input type="text" id="idno" class="form-control" style="border:1px solid #696969" >
+		</div>	
+		<div  class="form-group has-warning col-md-1 ">
+		  <label data-error="wrong" data-success="right" ></label>
+	      <input type="submit"  value="submit" onclick=" getDetailsBasedOnIdno()" style="background-color: blue;color:white"	 class="form-control"   >
+		</div>
+		</div>
+		<div id="changeBasedonIdno" >		
+		<div  class="box-content row">
+		<div  class="form-group has-warning col-md-3">
+						<label data-error="wrong" data-success="right">EmployeeName</label>
+						<input type="text" id="empname" class="form-control" readonly="readonly" >
+		</div>
+		<div  class="form-group has-warning col-md-3">
+						<label data-error="wrong" data-success="right" >Designation</label>
+						<input type="text" id="design" class="form-control" readonly="readonly" >
+		</div>
+		<div  class="form-group has-warning col-md-3">
+						<label data-error="wrong" data-success="right" >Department</label>
+						<input type="text" id="workdeptname" class="form-control" readonly="readonly" >
+		</div>
+		<div  class="form-group has-warning col-md-3">
+						<label data-error="wrong" data-success="right" >Division</label>
+						<input type="text" id="divisionname" class="form-control" readonly="readonly" >
+		</div>
+		</div>
+	<div>	
+	<hr color="blue">
+		<div  class="form-group has-warning col-md-3">
+						<label data-error="wrong" data-success="right" >SelectType</label>
+        <select>
+            <option>ChooseType</option>
+            <option value="permission">Permission</option>
+            <option value="passel">PassEL</option>
+            <option value="passsl">PassSL</option>
+            <option value="passcl">PassCL</option>
+            <option value="passleave">PassLeave</option>
+            <option value="forgetpunch">ForgetPunch</option>
+            <option value="lopintimation">LopIntimatation</option>
+        </select>
+    </div>
+    </div>		
+<h5 align="center" id="deletemessage" style="color:red"></h5>
+
+<hr color="blue">
+	<div class="permission box"> 
+	
+					<h3  style="color: blue">Add Permission</h3>
+					<br>
+					 <div align="left" class="box-content row"  >
+						<div class="form-group has-warning col-md-3" >
+							<label class="control-label">Permission Type</label> 
+							  <select id="permissiontype" class="form-control" name="permissiontype">
+							    <option value="">Select</option>
+								<option value="P">Personal</option>
+								<option value="O">Offical</option>
+							</select>
+						</div>
+					
+					<div class="form-group has-warning col-md-3" >
+							<label class="control-label" for="inputWarning1">Date</label> 
+							<input type="text" id="permissiondate" name="permissiondate"  class="form-control">
+						</div>
+						
+						<div class="form-group has-warning col-md-3" >
+							<label class="control-label" for="inputWarning1">From Time</label> 
+							 <input type="text" id="fromtime" name="fromtime"  class="form-control" placeholder="Select time in hours"> 	
+						</div>
+				
+						<div class="form-group has-warning col-md-3">
+							<label class="control-label" for="inputWarning1">To Time</label>
+							<input type="text" id="totime" name="totime" class="form-control">
+						</div>						
+					
+						<div class="form-group has-warning col-md-3">
+							<label class="control-label" for="inputWarning1">No Of Minutes</label> 
+						<input type="text" id="noofminutes"  class="form-control" style="color:red;font-size: large">
+						</div>
+						
+			           <div class="form-group has-warning col-md-3">
+			               <label class="control-label" for="inputWarning1">Reason</label>
+			                  <textarea rows="4" cols="10" id="reasonforpermission"
+				                  name="reasonforpermission" class="form-control">
+			                  </textarea>
+		               </div>
+					</div>
+
+					<br>
+					<div align="center">
+						<input type="button" id="leave_btn" class="btn btn-success" value="submit"  onclick="addPermission()" >
+					</div>
+               </div>
+       
+    <div class="passel box">
+               <h3  style="color: blue">PassEL</h3>
+			<br>
+				<div  class="box-content row">
+               <div class="form-group has-warning col-md-3" >
+							<label class="control-label" for="inputWarning1">Date</label> 
+							<input type="text" id="eldate" name="eldate"  class="form-control">
+						</div>
+			  <div class="form-group has-warning col-md-4">
+			               <label class="control-label" for="inputWarning1">Reason</label>
+			                  <textarea rows="4" cols="10" id="reasonforel"
+				                  name="reasonforpermission" class="form-control">
+			                  </textarea>
+		               </div>
+						<div align="center">
+						<input type="button" id="leave_btn" class="btn btn-success" value="submit" onclick="passel()" >
+					</div>
+					</div>
+                         </div>
+              <div class="passsl box">
+                   <h3  style="color: blue">PassSL</h3>
+			    <br>
+			    	<div  class="box-content row">
+                   <div class="form-group has-warning col-md-3" >
+							<label class="control-label" for="inputWarning1">Date</label> 
+							<input type="text" id="sldate" name="sldate"  class="form-control">
+						</div>
+						
+				   <div class="form-group has-warning col-md-4">
+			               <label class="control-label" for="inputWarning1">Reason</label>
+			                  <textarea rows="4" cols="10" id="reasonforsl"
+				                  name="reasonforpermission" class="form-control">
+			                  </textarea>
+		                </div>
+		               
+						<div align="center">
+						<input type="button" id="leave_btn" class="btn btn-success" value="submit" onclick="passsl()" >
+					</div>
+					</div>
+                       </div>
+             <div class="passcl box">
+                   <h3  style="color: blue">PassCL</h3>
+			    <br>
+			    	<div  class="box-content row">
+                  <div class="form-group has-warning col-md-3" >
+							<label class="control-label" for="inputWarning1">Date</label> 
+							<input type="text" id="cldate" name="cldate"  class="form-control">
+						</div>
+						
+				 <div class="form-group has-warning col-md-4">
+			               <label class="control-label" for="inputWarning1">Reason</label>
+			                  <textarea rows="4" cols="10" id="reasonforcl"
+				                  name="reasonforpermission" class="form-control">
+			                  </textarea>
+		               </div>
+		               
+						<div align="center">
+						<input type="button" id="leave_btn" class="btn btn-success" value="submit"  onclick="passcl()" >
+					</div>
+					</div>
+						</div>
+            <div class="passleave box">
+                  <h3  style="color: blue">PassLeave</h3>
+			  <br>
+			  	<div  class="box-content row">
+                 <div class="form-group has-warning col-md-3" >
+							<label class="control-label" for="inputWarning1">Date</label> 
+							<input type="text" id="passleavedate" name="passleavedate"  class="form-control">
+						</div>
+				 <div class="form-group has-warning col-md-3">
+			               <label class="control-label" for="inputWarning1">Reason</label>
+			                  <textarea rows="4" cols="10" id="reasonforpassleave"
+				                  name="reasonforpermission" class="form-control">
+			                  </textarea>
+		               </div>		
+						<div align="center">
+						<input type="button" id="leave_btn" class="btn btn-success" value="submit"  onclick="passLeave()" >
+					</div>
+					</div>
+						</div>
+           <div class="forgetpunch box">
+                  <h3  style="color: blue">ForgetPunch</h3>
+			  <br>
+			  	<div  class="box-content row">
+                  <div  class="form-group has-warning col-md-3" >
+							<label class="control-label" for="inputWarning1">Date</label> 
+							<input type="text" id="forgetpunchdate" name="forgetpunchdate"  class="form-control">
+						</div>
+				  <div class="form-group has-warning col-md-3">
+			               <label class="control-label" for="inputWarning1">Reason</label>
+			                  <textarea rows="4" cols="10" id="reasonforforgetpunch"
+				                  name="reasonforpermission" class="form-control">
+			                  </textarea>
+		               </div>
+						<div align="center">
+						<input type="button" id="leave_btn" class="btn btn-success" value="submit" onclick="forgetPunch()" >
+					</div>
+					</div>
+						</div>
+           <div class="lopintimation box">
+                 <h3  style="color: blue">LopIntimation</h3>
+			   <br>
+			     	<div  class="box-content row"> 
+                  <div class="form-group has-warning col-md-3" >
+							<label class="control-label" for="inputWarning1">Date</label> 
+							<input type="text" id="lopintimationdate" name="lopintimationtime"  class="form-control">
+						  </div>
+						  
+						   <div class="form-group has-warning col-md-3">
+			               <label class="control-label" for="inputWarning1">Reason</label>
+			                  <textarea rows="4" cols="10" id="reasonforlopintimation"
+				                  name="reasonforpermission" class="form-control">
+			                  </textarea>
+		               </div>
+		               
+					      <div align="center">
+						    <input type="button" id="leave_btn" class="btn btn-success" value="submit" onclick="lopIntimation()" >
+					      </div>
+					      </div>
+						</div>
+<div id="permissiontable"  class="search-table-outter wrapper" >
+<table id="permissionsList" class="display" style="width:100%" border="1">
+        <thead>
+            <tr>
+           		<th>TransactionDate</th>
+                <th>PermissionMinute</th>
+                <th>PermissionType</th>
+                <th>PassEL</th>
+              	<th>PassCL</th>
+              	<th>PassSL</th>
+              	<th>PassLeave</th>
+              	<th>ForgetPunch</th>
+              	<th>LopIntimation</th>
+              	<th>PermissionRemarks</th>
+              	<th>Edit/Delete</th>
+                
+            </tr>
+        </thead>
+    </table>
+    </div>
+						</div>
+						
+ <script src="resources/validation/bootstrapValidator.min.js"></script>
+ <script src="resources/dist/js/sidebarmenu.js"></script> 
+ <%@include file="footer.jsp"%>
+<script>
+jQuery('#eldate').datepicker({
+    autoclose: true,
+    todayHighlight: true
+});
+
+jQuery('#sldate').datepicker({
+    autoclose: true,
+    todayHighlight: true
+});
+jQuery('#cldate').datepicker({
+    autoclose: true,
+    todayHighlight: true
+});
+jQuery('#passleavedate').datepicker({
+    autoclose: true,
+    todayHighlight: true
+});
+jQuery('#forgetpunchdate').datepicker({
+    autoclose: true,
+    todayHighlight: true
+});
+jQuery('#lopintimationdate').datepicker({
+    autoclose: true,
+    todayHighlight: true
+});
+jQuery('#permissiondate').datepicker({
+    autoclose: true,
+    todayHighlight: true
+});
+</script>

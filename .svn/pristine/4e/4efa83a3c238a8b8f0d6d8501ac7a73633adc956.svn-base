@@ -1,0 +1,256 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+   pageEncoding="ISO-8859-1"%>
+<%@page import="com.hrms.utitlities.DBUtil"%>
+<%@page import="java.sql.*" %>
+<%@page import="java.util.*" %>
+<%HttpSession sess=request.getSession();
+String username=(String)sess.getAttribute("username");
+
+%>
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+     <style>
+.nth-table {
+    border-collapse: collapse;
+    border: 1px solid #400040;
+  }
+ .nth-table tr:nth-child(){
+        background: #ebf7d4;
+        
+    }
+.nth-table th{
+    border: 1px dotted #460046;
+    color: #000;
+    padding:5px;
+    background-color:#AFD8D8;
+  }
+.nth-table td{
+    border: 1px dashed #000;
+    color: #002F5E;
+    padding:5px;
+    width:100px;
+  }
+</style>
+<script>
+
+function openSalaryStatement(){
+	var division=	$("#division").val();
+	var month=	$("#month").val();
+	var year=	$("#year").val();
+	window.open("SalaryStatment.jsp?division="+division+"&&year="+year+"&&month="+month);
+}
+</script>
+</head>
+<body>
+
+<%
+
+if(username!=null){
+int division=Integer.parseInt(request.getParameter("division"));
+int month=Integer.parseInt(request.getParameter("month"));
+int year=Integer.parseInt(request.getParameter("year"));
+
+//;
+Connection con=DBUtil.getConnection();
+Statement stm=null;
+ResultSet rs=null;
+String sql=null;
+String divisionname="";
+stm=con.createStatement();
+
+
+
+String sqlQueryForDivisionName="select name from hr_division where divisionid="+division;
+ResultSet rst=stm.executeQuery(sqlQueryForDivisionName);
+if(rst.next()){
+	divisionname=rst.getString(1);
+}
+//select  e.empname,e.desgn,d.name,31,sum(h.present),sum(h.od),sum(h.wh),sum(h.leaves),sum(h.leaves),sum(h.leaves),sum(h.leaves),sum(h.ph),sum(h.lop),31-sum(h.lop) from hr_muster h join hr_empmaster e on e.idno=h.idno join hr_department d on d.deptid=e.workdeptid where tmon=6 and tyear=2019 ;
+sql="select d.name,1,sum(h.basic),sum(h.hra),sum(h.conveyance),sum(h.otherearnings1),sum(h.otherearnings2),sum(h.grossearnings),sum(h.pfamount),sum(h.ptax),sum(h.esiamount),sum(h.salaryadvance),sum(h.touradvance),sum(h.itax),sum(h.mediclaim),sum(h.otherdeduction1),sum(h.otherdeduction2),sum(h.grossdeductions),sum(h.netamount) from hr_empmonthpay h join hr_empmaster e on e.idno=h.idno join hr_department d on d.deptid=e.workdeptid where h.tmonth="+month+" and h.tyear="+year+" and e.workingdivisionid="+division+"  group by d.name" ;
+rs=stm.executeQuery(sql);
+System.out.println(sql);
+int i=1;
+int countStrength=0,basic=0,hra=0,conv=0,otherearnings=0,grossearnings=0,pf=0,tax=0,esi=0,itax=0,insurance=0,saladvance=0,otherdeductions=0,total=0,netsalary=0;
+
+
+
+
+%>
+<body>
+
+<input type="hidden" id="division" value="<%=division%>">
+<input type="hidden" id="month" value="<%=month%>">
+<input type="hidden" id="year" value="<%=year%>">
+
+
+<body> 
+<h3 style="color:red" align="center"><%=divisionname%> PAY SHEET FOR THE MONTH OF <%=month%>/<%=year%></h3>
+<div align="right">
+<input type="submit" value="DetailedView" style="background-color: yellow;border-radius: 50%;width:10%;outline: none;" onclick="openSalaryStatement()">
+</div>
+<br>
+<table id="tblCustomers" class="nth-table" >
+ 
+  <tr>
+      <th rowspan="2">Sno</th>
+      <th rowspan="2">Department/Cost Center Name</th>
+	  <th rowspan="2" >Count Of Strenth</th>
+      <th colspan="5" >Earnings</th>
+      <th colspan="8" >Deductions</th>	  
+	  <th rowspan="2">NetSalary</th>	
+	</tr>  
+  <tr>	  
+      <th>Basic</th>
+      <th>Hra</th>
+	  <th>Conv.Al</th>
+	  <th>Other.Al</th>
+	  <th>Gross.Total</th>
+	  <th><a href="PFReport.jsp?division=<%=division%>&&month=<%=month%>&&year=<%=year%>" target="_blank">PF</a></th>
+	  <th><a href="Deductions.jsp?division=<%=division%>&&month=<%=month%>&&year=<%=year%>&&fld=ptax" target="_blank">P.Tax</a></th>
+	  <th><a href="Deductions.jsp?division=<%=division%>&&month=<%=month%>&&year=<%=year%>&&fld=esi" target="_blank">ESI</a></th>
+	  <th><a href="Deductions.jsp?division=<%=division%>&&month=<%=month%>&&year=<%=year%>&&fld=tds" target="_blank">TDS</a></th>
+	  <th><a href="Deductions.jsp?division=<%=division%>&&month=<%=month%>&&year=<%=year%>&&fld=insurance" target="_blank">Insurance</a></th>
+	  <th><a href="Deductions.jsp?division=<%=division%>&&month=<%=month%>&&year=<%=year%>&&fld=salaryadvance" target="_blank">Sal.Adv</a></th>
+	  <th><a href="Deductions.jsp?division=<%=division%>&&month=<%=month%>&&year=<%=year%>&&fld=otherdeductions" target="_blank">Oth.Ded</a></th>
+	  <th>Total</th>
+        
+  </tr>
+  
+  
+  <%while(rs.next()){ %>
+    <tr>
+      <td><%=i %></td>
+      <td><%=rs.getString(1) %></td>
+      <td><%=rs.getInt(2)%></td> <!-- countStrength -->
+	  <td><%=rs.getInt(3)%></td> <!-- basic -->
+	  <td><%=rs.getInt(4)%></td> <!-- hra -->
+	  <td><%=rs.getInt(5)%></td>
+	  <td><%=rs.getInt(6)+rs.getInt(7)%></td>
+	  <td><%=rs.getInt(8)%></td>
+	  <td><%=rs.getInt(9)%></td>
+	  <td><%=rs.getInt(10)%></td><!-- Tax  -->
+	  <td><%=rs.getInt(11)%></td><!-- ESi  -->
+	  <td><%=rs.getInt(14)%></td><!-- itax   -->
+	  <td><%=rs.getInt(15)%></td>
+	  <td><%=rs.getInt(12)%></td>
+	  <td><%=rs.getInt(16)+rs.getInt(17)%></td>
+	  <td><%=rs.getInt(18)%></td><!-- total   -->
+	  <td><%=rs.getInt(19)%></td><!-- netsalary   -->
+	  
+  </tr>
+   <%
+  i=i+1; 
+   countStrength=countStrength+rs.getInt(2);
+   basic=basic+rs.getInt(3);
+   hra=hra+rs.getInt(4);
+   conv=conv+rs.getInt(5);
+   otherearnings=otherearnings+(rs.getInt(6)+rs.getInt(7));
+   grossearnings=grossearnings+rs.getInt(8);
+   pf=pf+rs.getInt(9);
+   tax=tax+rs.getInt(10);
+   esi=esi+rs.getInt(11);
+   itax=itax+rs.getInt(14);
+   insurance=insurance+rs.getInt(15);
+   saladvance=saladvance+rs.getInt(12);
+   otherdeductions=otherdeductions+(rs.getInt(16)+rs.getInt(17));
+   total=total+rs.getInt(18);
+   netsalary=netsalary+rs.getInt(19);
+  } %>
+  
+  
+  <tr>
+      <td>&nbsp;</td>
+      <th>** Totals **</td>
+      <th><%=countStrength %></td>
+	  <th><%=basic %></td>
+	  <th><%=hra %></td>
+	  <th><%=conv %></td>
+	  <th><%=otherearnings%></td>
+	  <th><%=grossearnings%></td>
+	  <th><%=pf%></td>
+	  <th><%=tax%></td>
+	  <th><%=esi%></td>
+	  <th><%=itax%></td>
+	  <th><%=insurance%></td>
+	  <th><%=saladvance%></td>
+	  <th><%=otherdeductions%></td>
+	  <th><%=total%></td>
+	  <th><%=netsalary%></td>	  
+  </tr>
+ 
+</table>
+    <br />
+    <input type="button" id="btnExport" value="Export" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.22/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script type="text/javascript">
+        $("body").on("click", "#btnExport", function () {
+            html2canvas($('#tblCustomers')[0], {
+                onrendered: function (canvas) {
+                    var data = canvas.toDataURL();
+                    var docDefinition = {
+                        content: [{
+                            image: data,
+                            width: 500
+                        }]
+                    };
+                    pdfMake.createPdf(docDefinition).download("PaySheet");
+                }
+            });
+        });
+    </script>
+	
+	<br>
+	<br>
+	<table width="100%" id="tblEmpMonthStatus" class="nth-table" >
+	
+	
+    <tr valign="top">
+    <% 
+	 sql=  "select e.idno,e.empname,e.desgn,d.name from hr_empmaster e join hr_department d on e.workdeptid=d.deptid where month(doj)="+month+" and year(doj)="+year+" and e.workingdivisionid="+division+" ";
+     rs=stm.executeQuery(sql);
+	 System.out.println(sql);
+	  
+	  %>
+      <td width="50%" colspan="5"><b><u>New Joinings</b></u> <br><br>
+	     	<table id="tblEmpMonthJoinings" class="nth-table" width="100%" >
+	     	<%while(rs.next()){%>
+			   <tr>
+			   <td><%=rs.getInt(1) %>-<%=rs.getString(2)%>,<%=rs.getString(3)%>,<%=rs.getString(4)%></td>
+			  
+			   </tr>
+			   <% } %>
+			</table>
+	    
+	  </td>
+	  <% 
+	  
+	  sql= "select e.idno, e.empname,e.desgn,d.name from hr_empmaster e join hr_department d on e.workdeptid=d.deptid where e.empleft=1 and e.workingdivisionid="+division+" ";
+      rs=stm.executeQuery(sql);
+	  
+	  %>
+      <td colspan="5"><b><u>Left Employees</b></u> <br><br>
+	     	<table id="tblEmpMonthLeft" class="nth-table" width="100%">
+	     	<%while(rs.next()){%>
+			   <tr>
+			   <td><%=rs.getInt(1)%>-<%=rs.getString(2)%>,<%=rs.getString(3)%>,<%=rs.getString(4)%></td>
+			  
+			   </tr>
+			   <% } %>
+			</table>
+	    
+	  </td>
+
+</tr>
+</table>
+<%con.close();%>
+<%}else{
+	response.sendRedirect("login");
+}
+	%>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+package com.hrms.Dao;
+
+import com.hrms.dtos.EducationDetailsDTO;
+import com.hrms.dtos.EmployeeMasterDTO;
+import com.hrms.dtos.EmployeeShiftScheduleDTO;
+import com.hrms.dtos.ExperienceDetailsDTO;
+import com.hrms.dtos.FamilyDetailsDTO;
+import com.hrms.dtos.PersonalDetailsDTO;
+import com.hrms.dtos.SalaryDetailsDTO;
+
+import java.util.List;
+import java.util.Map;
+
+public interface HrReportDao {
+
+	public List<EmployeeMasterDTO> getEmpJobDetails(int division, int project);
+
+	public List<PersonalDetailsDTO> getPersonalDetails(int division, int project);
+
+	public List<FamilyDetailsDTO> getFamilyDetails(int division, int project);
+
+	public List<ExperienceDetailsDTO> getExperienceDetails(int division, int project);
+
+	public List<EducationDetailsDTO> getEducationDetails(int division, int project);
+
+	public List<EmployeeShiftScheduleDTO> getEmployeeShiftSchedule(int division, int project);
+
+	public List<SalaryDetailsDTO> getSalaryDetails(int division, int project);
+
+	public List<Map<String,Object>> getDailyAttendenceStrenthReport(int division , String fromdate);
+}

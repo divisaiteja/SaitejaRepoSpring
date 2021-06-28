@@ -1,0 +1,9 @@
+
+
+#Database related properties
+database.driver=com.mysql.jdbc.Driver
+database.url=jdbc:mysql://35.154.151.16:3306/hrms
+database.user=erpuser
+database.password=erpuser
+
+directoryFolder=E:\\LATESTWORKSPACEBYSRAVAN\\DASHBOARD\\src\\main\\webapp\\resources\\theme\\CustomDirectory
